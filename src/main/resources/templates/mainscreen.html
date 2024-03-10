@@ -11,12 +11,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-    <title>My Bicycle Shop</title>
+    <title>Kitchen Connections</title>
 </head>
-<body>
+<body style="background-color: black; color: azure;">
 
-<div class="container">
-    <h1>Shop</h1>
+<div style="text-align: center;" class="container">
+    <h1>Kitchen Connections</h1>
     <hr>
     <h2>Parts</h2>
     <form th:action="@{/mainscreen}">
@@ -29,7 +29,7 @@
     <br><br>
     <a th:href="@{/showFormAddInPart}" class="btn btn-primary btn-sm mb-3">Add Inhouse Part</a>
     <a th:href="@{/showFormAddOutPart}" class="btn btn-primary btn-sm mb-3">Add Outsourced Part</a>
-    <table class="table table-bordered table-striped">
+    <table style="color: azure;" class="table table-bordered table-striped">
         <thead class="thead-dark">
         <tr>
             <th>Name</th>
@@ -65,7 +65,7 @@
     </script>
     <br><br>
     <a th:href="@{/showFormAddProduct}" class="btn btn-primary btn-sm mb-3">Add Product</a>
-    <table class="table table-bordered table-striped">
+    <table style="color: azure;" class="table table-bordered table-striped">
         <thead class="thead-dark">
         <tr>
             <th>Name</th>

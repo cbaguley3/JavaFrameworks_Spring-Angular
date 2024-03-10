@@ -7,11 +7,13 @@ All changes/commits will be noted here. Each note will include a prompt, file na
 
 C.  Customize the HTML user interface for your customer’s application. The user interface should include the shop name, the product names, and the names of the parts.
 
-
-Note: Do not remove any elements that were included in the screen. You may add any additional elements you would like or any images, colors, and styles, although it is not required.
-
+1. prompt: centered text, file name: mainscreen.html, line number: 18, change: added **style="text-align: center;"**
+2. prompt: changed background and font color, file name: mainscreen.html, line number: 18, change: added **style="background-color: black; color: azure;" to body tag**
+3. prompt: changed font color, file name: mainscreen.html, line number: 16, change: added **style="background-color: black; color: azure;"**
+4. prompt: changed table color, file name: mainscreen.html, line number: 32 & 68, change: added **style="color: azure;"**
 
 D.  Add an “About” page to the application to describe your chosen customer’s company to web viewers and include navigation to and from the “About” page and the main screen.
+
 
 
 E.  Add a sample inventory appropriate for your chosen store to the application. You should have five parts and five products in your sample inventory and should not overwrite existing data in the database.
