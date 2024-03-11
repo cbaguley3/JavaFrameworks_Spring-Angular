@@ -46,15 +46,116 @@ D.  Add an “About” page to the application to describe your chosen customer�
 
 
 E.  Add a sample inventory appropriate for your chosen store to the application. You should have five parts and five products in your sample inventory and should not overwrite existing data in the database.
+1. prompt: added if statement to check inventory level == 0, file name: BootStrapData.java, line number: 46-48, change:
+   
+   if (partsCount == 0 && productsCount == 0) {
+      addSampleInventory();
+   } 
 
+2. prompt: added my five parts, file name: BootStrapData.java, line number: 69-112, change:
 
-Note: Make sure the sample inventory is added only when both the part and product lists are empty. When adding the sample inventory appropriate for the store, the inventory is stored in a set so duplicate items cannot be added to your products. When duplicate items are added, make a “multi-pack” part.
+      OutsourcedPart sink = new OutsourcedPart();
+        sink.setCompanyName("Kitchen Connections");
+        sink.setName("Sink");
+        sink.setInv(30);
+        sink.setPrice(1500.0);
+        sink.setId(101L);
+        outsourcedPartRepository.save(sink);
+
+      OutsourcedPart shakerCabinets = new OutsourcedPart();
+        shakerCabinets.setCompanyName("Kitchen Connections");
+        shakerCabinets.setName("Shaker Cabinets");
+        shakerCabinets.setInv(35);
+        shakerCabinets.setPrice(1000.0);
+        shakerCabinets.setId(102L);
+        outsourcedPartRepository.save(shakerCabinets);
+
+      OutsourcedPart luxuryCountertops = new OutsourcedPart();
+        luxuryCountertops.setCompanyName("Kitchen Connections");
+        luxuryCountertops.setName("Luxury Countertops");
+        luxuryCountertops.setInv(45);
+        luxuryCountertops.setPrice(2500.0);
+        luxuryCountertops.setId(103L);
+        outsourcedPartRepository.save(luxuryCountertops);
+
+      OutsourcedPart refrigerator = new OutsourcedPart();
+        refrigerator.setCompanyName("Kitchen Connections");
+        refrigerator.setName("Refrigerator");
+        refrigerator.setInv(30);
+        refrigerator.setPrice(1500.0);
+        refrigerator.setId(104L);
+        outsourcedPartRepository.save(refrigerator);
+
+      OutsourcedPart rangeOven = new OutsourcedPart();
+        rangeOven.setCompanyName("Kitchen Connections");
+        rangeOven.setName("Range/Oven");
+        rangeOven.setInv(40);
+        rangeOven.setPrice(2000.0);
+        rangeOven.setId(105L); 
+        outsourcedPartRepository.save(rangeOven);
+
+   List<OutsourcedPart> outsourcedParts = (List<OutsourcedPart>) outsourcedPartRepository.findAll();
+        for (OutsourcedPart part : outsourcedParts) {
+            System.out.println(part.getName() + " " + part.getCompanyName());
+        }
+
+3. prompt: created by 5 products, file name: BootStrapData.java, line number: 124-133, change:
+
+   Product classicElegancePackage = new Product("Classic Elegance Package", 7000.0, 30);
+   Product modernChicPackage = new Product("Modern Chic Package", 7500.0, 30);
+   Product rusticRetreatPackage = new Product("Rustic Retreat Package", 8100.0, 30);
+   Product luxuriousOasisPackage = new Product("Luxurious Oasis Package", 8300.0, 25);
+   Product sleekUrbanPackage = new Product("Sleek Urban Package", 7600.0, 30);
+   productRepository.save(classicElegancePackage);
+   productRepository.save(modernChicPackage);
+   productRepository.save(rusticRetreatPackage);
+   productRepository.save(luxuriousOasisPackage);
+   productRepository.save(sleekUrbanPackage);
+4. prompt: created addSampleInventory method, file name: BootStrapData.java, line number: 144-183, change: 
+   
+   private void addSampleInventory() {
+   OutsourcedPart sink = new OutsourcedPart();
+           sink.setCompanyName("Kitchen Connections");
+           sink.setName("Sink");
+           sink.setInv(30);
+           sink.setPrice(1500.0);
+           outsourcedPartRepository.save(sink);
+
+   OutsourcedPart shakerCabinets = new OutsourcedPart();
+           shakerCabinets.setCompanyName("Kitchen Connections");
+           shakerCabinets.setName("Shaker Cabinets");
+           shakerCabinets.setInv(35);
+           shakerCabinets.setPrice(1000.0);
+           outsourcedPartRepository.save(shakerCabinets);
+
+   OutsourcedPart luxuryCountertops = new OutsourcedPart();
+           luxuryCountertops.setCompanyName("Kitchen Connections");
+           luxuryCountertops.setName("Luxury Countertops");
+           luxuryCountertops.setInv(45);
+           luxuryCountertops.setPrice(2500.0);
+           outsourcedPartRepository.save(luxuryCountertops);
+
+   OutsourcedPart refrigerator = new OutsourcedPart();
+           refrigerator.setCompanyName("Kitchen Connections");
+           refrigerator.setName("Refrigerator");
+           refrigerator.setInv(30);
+           refrigerator.setPrice(1500.0);
+           outsourcedPartRepository.save(refrigerator);
+
+   OutsourcedPart rangeOven = new OutsourcedPart();
+           rangeOven.setCompanyName("Kitchen Connections");
+           rangeOven.setName("Range/Oven");
+           rangeOven.setInv(40);
+           rangeOven.setPrice(2000.0);
+           outsourcedPartRepository.save(rangeOven);
+
+   List<OutsourcedPart> outsourcedParts=(List<OutsourcedPart>) outsourcedPartRepository.findAll();
+   for(OutsourcedPart part:outsourcedParts){
+   System.out.println(part.getName()+" "+part.getCompanyName());
+   }
 
 
 F.  Add a “Buy Now” button to your product list. Your “Buy Now” button must meet each of the following parameters:
-•  The “Buy Now” button must be next to the buttons that update and delete products.
-•  The button should decrement the inventory of that product by one. It should not affect the inventory of any of the associated parts.
-•  Display a message that indicates the success or failure of a purchase.
 
 
 G.  Modify the parts to track maximum and minimum inventory by doing the following:
