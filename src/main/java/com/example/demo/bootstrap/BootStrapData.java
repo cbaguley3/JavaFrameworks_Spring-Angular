@@ -43,9 +43,9 @@ public class BootStrapData implements CommandLineRunner {
         long partsCount = partRepository.count();
         long productsCount = productRepository.count();
 
-        if (partsCount == 0 && productsCount == 0) {
+       /* if (partsCount == 0 && productsCount == 0) {
             addSampleInventory();
-        }
+        }  */
 
 
        /*
@@ -120,6 +120,7 @@ public class BootStrapData implements CommandLineRunner {
         productRepository.save(unicycle);
         */
 
+        /*
         // My 5 Products
         Product classicElegancePackage = new Product("Classic Elegance Package", 7000.0, 30);
         Product modernChicPackage = new Product("Modern Chic Package", 7500.0, 30);
@@ -131,7 +132,7 @@ public class BootStrapData implements CommandLineRunner {
         productRepository.save(rusticRetreatPackage);
         productRepository.save(luxuriousOasisPackage);
         productRepository.save(sleekUrbanPackage);
-
+        */
 
         System.out.println("Started in Bootstrap");
         System.out.println("Number of Products" + productRepository.count());
@@ -139,8 +140,9 @@ public class BootStrapData implements CommandLineRunner {
         System.out.println("Number of Parts" + partRepository.count());
         System.out.println(partRepository.findAll());
 
-    }
 
+
+    /*
     private void addSampleInventory() {
         OutsourcedPart sink = new OutsourcedPart();
         sink.setCompanyName("Kitchen Connections");
@@ -181,5 +183,7 @@ public class BootStrapData implements CommandLineRunner {
         for(OutsourcedPart part:outsourcedParts){
             System.out.println(part.getName()+" "+part.getCompanyName());
         }
+    } */
+
     }
 }

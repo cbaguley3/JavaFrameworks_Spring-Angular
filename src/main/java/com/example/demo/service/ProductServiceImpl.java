@@ -66,4 +66,15 @@ public class ProductServiceImpl implements ProductService{
         }
         return (List<Product>) productRepository.findAll();
     }
+
+    @Override
+    public boolean inStock(Product theProduct) {
+        if(theProduct.getInv() == 0) {
+            return false;
+        }
+        else {
+            theProduct.setInv(theProduct.getInv()-1);
+            return true;
+        }
+    }
 }

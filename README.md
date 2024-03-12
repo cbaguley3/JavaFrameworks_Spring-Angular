@@ -5,7 +5,7 @@
 
 All changes/commits will be noted here. Each note will include a prompt, file name, line number, and change.
 
-C.  Customize the HTML user interface for your customer’s application. The user interface should include the shop name, the product names, and the names of the parts.
+C. Customize the HTML user interface for your customer’s application. The user interface should include the shop name, the product names, and the names of the parts.
 1. prompt: centered text, file name: mainscreen.html, line number: 18, change:  **style="text-align: center;"**
 2. prompt: changed background and font color, file name: mainscreen.html, line number: 18, change:  **style="background-color: black; color: azure;" to body tag**
 3. prompt: changed font color, file name: mainscreen.html, line number: 16, change:  **style="background-color: black; color: azure;"**
@@ -19,8 +19,8 @@ D.  Add an “About” page to the application to describe your chosen customer�
     <div class="container" style="text-align: center">
     <header><h1>Welcome to Kitchen Connections</h1></header>
     <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: space-evenly;" >
-            <a href="mainscreen.html">Home</a>
-            <a href="aboutUs.html">About</a>
+            <a href="/mainscreen">Home</a>
+            <a href="/aboutUs">About</a>
     </nav>
     </div>
    
@@ -33,16 +33,17 @@ D.  Add an “About” page to the application to describe your chosen customer�
    <p>From the initial consultation to the final installation, we're with you every step of the way, ensuring a smooth and stress-free experience. Discover the endless possibilities for your kitchen makeover with Kitchen Connections.</p>
    </div>
    
-5. prompt: Created controller to render the aboutUs template, file name: AboutUsController.java, line number: 5-12, change:
-   
-   @Controller
-   public class AboutUsController {
+5. prompt: Created controller to render the aboutUs template, file name: AboutUsController.java, line number: 6-14, change:
 
-   @GetMapping("/aboutUs")
-   public String showAboutUsPage() {
-   return "aboutUs";
-   }
-   }
+@Controller
+@RequestMapping(path = "/aboutUs")
+public class AboutUsController {
+
+    @GetMapping
+    public String showAboutUsPage() {
+        return "aboutUs";
+    }
+}
 
 
 E.  Add a sample inventory appropriate for your chosen store to the application. You should have five parts and five products in your sample inventory and should not overwrite existing data in the database.
@@ -155,7 +156,145 @@ E.  Add a sample inventory appropriate for your chosen store to the application.
    }
 
 
-F.  Add a “Buy Now” button to your product list. Your “Buy Now” button must meet each of the following parameters:
+F.  
+1. prompt: added buy now button, file name: mainScreen.html, line number: 87-90, change: 
+
+        <form method="post" action="/buyConfirmation">
+                <input type="hidden" th:name="productId" th:value="${tempProduct.id}">
+                <button class="btn btn-primary btn-sm mb-3" type="submit">Buy Now</button>
+        </form>
+
+2. prompt: Added buyConfirmation page, file name: buyConfirmation.html, line number: 1-22, change:
+
+   <!DOCTYPE html>
+       <html lang="en" xmlns:th="http://www.thymeleaf.org">
+       <head>
+           <meta charset="UTF-8">
+           <title>Order Confirmation</title>
+       <!-- Bootstrap CSS -->
+           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+             integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+       </head>
+       <body style="background-color: black; color: azure;">
+    
+       <div style="text-align: center;" class="container">
+           <h1>Kitchen Connections</h1>
+           <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: space-evenly;" >
+               <a href="/mainscreen">Home</a>
+               <a href="/aboutUs">About</a>
+           </nav>
+       </div>
+       <div style="display: flex; justify-content: center; margin: 5px;"><h2>Thank you for purchasing! Your order has been confirmed.</h2></div>
+       </body>
+       </html>
+
+3. prompt: created BuyProductController w/ inventory decrement logic, file name: BuyProductController.java, line number: 1-42, change:
+
+    package com.example.demo.controllers;
+
+    import com.example.demo.domain.Product;
+    import com.example.demo.repositories.ProductRepository;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.*;
+    
+    import java.util.Optional;
+    
+    @Controller
+    @RequestMapping(path = "/buyConfirmation")
+    public class BuyProductController {
+
+    private final ProductRepository productRepository;
+
+    @Autowired
+    public BuyProductController(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    @PostMapping
+    public String buyProduct(@RequestParam("productId") Long productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+
+            if (product.getInv() > 0) {
+                product.setInv(product.getInv() - 1);
+                productRepository.save(product);
+                return "buyConfirmation";
+            } else {
+                // Product out of stock
+                return "outOfStock";
+            }
+        } else {
+            // Product not found
+            return "redirect:/error?message=Product not found";
+        }
+    }
+}
+
+4. prompt: created out of stock page/notification, file name: outOfStock.html, line number: 1-22, change:
+
+        <!DOCTYPE html>
+            <html lang="en" xmlns:th="http://www.thymeleaf.org">
+            <head>
+                <meta charset="UTF-8">
+                <title>Order Confirmation</title>
+                <!-- Bootstrap CSS -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+                      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+            
+            </head>
+            <body style="background-color: black; color: azure;">
+            
+            <div style="text-align: center;" class="container">
+                <h1>Kitchen Connections</h1>
+                <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: space-evenly;" >
+                    <a href="/mainscreen">Home</a>
+                    <a href="/aboutUs">About</a>
+                </nav>
+            </div>
+            <div style="display: flex; justify-content: center; margin: 5px;"><h2>Sorry, but this product is out of stock. The order has been cancelled.</h2></div>
+            </body>
+            </html>
+
+5. prompt: Created out of stock controller, file name: OutOfStockController.java, line number: 1-15, change:
+
+        package com.example.demo.controllers;
+    
+        import org.springframework.stereotype.Controller;
+        import org.springframework.web.bind.annotation.GetMapping;
+        import org.springframework.web.bind.annotation.PostMapping;
+        import org.springframework.web.bind.annotation.RequestMapping;
+        
+        @Controller
+        @RequestMapping(path = "/outOfStock")
+        public class OutOfStockController {
+        @GetMapping
+        public String showOutOfStockPage() {
+        return "outOfStock";
+        }
+        }
+6.  prompt: added boolean method inStock, file name: ProductService.java, line number: 21, change:
+
+         public boolean inStock (Product theProduct);
+
+7. prompt: added inStock method logic, file name: ProductServiceImpl.java, line number: 70-79, change: 
+
+       @Override
+       public boolean inStock(Product theProduct) {
+       if(theProduct.getInv() == 0) {
+       return false;
+       }
+       else {
+       theProduct.setInv(theProduct.getInv()-1);
+       return true;
+       }
+       }
+
+
+
 
 
 G.  Modify the parts to track maximum and minimum inventory by doing the following:
