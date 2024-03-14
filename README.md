@@ -415,8 +415,7 @@ G.
 
     change in application.properties: spring.datasource.url=jdbc:h2:file:~/my-spring-boot-db
 
-6.
-prompt: created Thymeleaf alerts to enforce inventory between min and max inventory, file name: InhousePartForm.html & OutsourcedPartForm.html, line number: 28-34 change:
+6. prompt: created Thymeleaf alerts to enforce inventory between min and max inventory, file name: InhousePartForm.html & OutsourcedPartForm.html, line number: 28-34 change:
     
          <p>
             <input type="number" th:field="*{minInv}" placeholder="Minimum Inventory" class="form-control mb-4 col-4" min="1"/>
@@ -429,10 +428,99 @@ prompt: created Thymeleaf alerts to enforce inventory between min and max invent
     
 
 
-H.  Add validation for between or at the maximum and minimum fields. The validation must include the following:
-•  Display error messages for low inventory when adding and updating parts if the inventory is less than the minimum number of parts.
-•  Display error messages for low inventory when adding and updating products lowers the part inventory below the minimum.
-•  Display error messages when adding and updating parts if the inventory is greater than the maximum.
+H.
+1. prompt: added error messages for low inventory when adding/updating parts below set min inventory, file name: AddinhousePartController.java & AddOutsourcedPartController.java, line number: (37-41) & (44-49 + 62-64), change:
+
+AddinhousePartController.java:
+
+            
+            if (part.getInv() < part.getMinInv()) {
+                theBindingResult.rejectValue("inv", "error.inhousepart", "Inventory cannot be less than the minimum inventory level.");
+                return "InhousePartForm";
+            }
+AddOutsourcedPartController.java: 
+
+lines 44-49:
+
+            if (bindingResult.hasErrors() || !isInvValid(part.getInv(), part.getMinInv(), part.getMaxInv())) {
+            if (part.getInv() < part.getMinInv()) {
+                bindingResult.rejectValue("inv", "invalid.inventory.low", "Inventory is lower than minimum.");
+            } else if (part.getInv() > part.getMaxInv()) {
+                bindingResult.rejectValue("inv", "invalid.inventory.high", "Inventory is greater than maximum.");
+            }
+            return "OutsourcedPartForm";
+
+lines 62-64:
+    
+            public boolean isInvValid(int inv, int minInv, int maxInv) {
+            return inv >= minInv && inv <= maxInv;
+            }
+
+2. prompt: created validator & annotation for max inventory, file name: ValidNoMoreThan100.java & NoMoreThan100Validator.java, line number: entire page, change:
+
+ValidNoMoreThan100.java: 
+
+            package com.example.demo.validators;
+
+            import javax.validation.Constraint;
+            import javax.validation.Payload;
+            import java.lang.annotation.ElementType;
+            import java.lang.annotation.Retention;
+            import java.lang.annotation.RetentionPolicy;
+            import java.lang.annotation.Target;
+            
+            @Constraint(validatedBy = {NoMoreThan100Validator.class})
+            @Target({ElementType.FIELD, ElementType.PARAMETER})
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface ValidNoMoreThan100 {
+            String message() default "You cannot add more than 100 parts";
+            
+                Class<?>[] groups() default {};
+            
+                Class<? extends Payload>[] payload() default {};
+            }
+
+NoMoreThan100Validator.java:
+
+            package com.example.demo.validators;
+    
+            import org.springframework.beans.factory.annotation.Autowired;
+            import org.springframework.context.ApplicationContext;
+            
+            import javax.validation.ConstraintValidator;
+            import javax.validation.ConstraintValidatorContext;
+            
+            public class NoMoreThan100Validator implements ConstraintValidator<ValidNoMoreThan100, Integer> {
+    
+            @Autowired
+            private ApplicationContext context;
+        
+            public static ApplicationContext myContext;
+        
+            @Override
+            public void initialize(ValidNoMoreThan100 constraintAnnotation) {
+                ConstraintValidator.super.initialize(constraintAnnotation);
+            }
+        
+            @Override
+            public boolean isValid(Integer integer, ConstraintValidatorContext constraintValidatorContext) {
+                if(context == null) return true;
+                if(context != null) myContext=context;
+                if(integer > 100) return false;
+                else return true;
+            }
+         }
+            
+3. prompt: added custom annotation to maxInv, file name: Part.java, line number: 128, change: 
+
+        @ValidNoMoreThan100()
+
+4. prompt: modified EnufPartsValidator, file name: EnufPartsValidator.java, line number: 32-35, change:
+
+         for (Part p : myProduct.getParts()) {
+            if (p.getInv() - 1 < p.getMinInv()) {
+                    return false;
+            }
 
 
 I.  Add at least two unit tests for the maximum and minimum fields to the PartTest class in the test package.

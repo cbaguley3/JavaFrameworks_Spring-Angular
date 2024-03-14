@@ -31,26 +31,35 @@ public class AddOutsourcedPartController {
     private ApplicationContext context;
 
     @GetMapping("/showFormAddOutPart")
-    public String showFormAddOutsourcedPart(Model theModel){
-        Part part=new OutsourcedPart();
-        theModel.addAttribute("outsourcedpart",part);
+    public String showFormAddOutsourcedPart(Model theModel) {
+        OutsourcedPart outsourcedPart = new OutsourcedPart();
+        theModel.addAttribute("outsourcedpart", outsourcedPart);
         return "OutsourcedPartForm";
     }
 
     @PostMapping("/showFormAddOutPart")
-    public String submitForm(@Valid @ModelAttribute("outsourcedpart") OutsourcedPart part, BindingResult bindingResult, Model theModel){
-        theModel.addAttribute("outsourcedpart",part);
-        if(bindingResult.hasErrors()){
+    public String submitForm(@Valid @ModelAttribute("outsourcedpart") OutsourcedPart part, BindingResult bindingResult, Model theModel) {
+        theModel.addAttribute("outsourcedpart", part);
+
+        if (bindingResult.hasErrors() || !isInvValid(part.getInv(), part.getMinInv(), part.getMaxInv())) {
+            if (part.getInv() < part.getMinInv()) {
+                bindingResult.rejectValue("inv", "invalid.inventory.low", "Inventory is lower than minimum.");
+            } else if (part.getInv() > part.getMaxInv()) {
+                bindingResult.rejectValue("inv", "invalid.inventory.high", "Inventory is greater than maximum.");
+            }
             return "OutsourcedPartForm";
-        }
-        else{
-        OutsourcedPartService repo=context.getBean(OutsourcedPartServiceImpl.class);
-        OutsourcedPart op=repo.findById((int)part.getId());
-        if(op!=null)part.setProducts(op.getProducts());
+        } else {
+            OutsourcedPartService repo = context.getBean(OutsourcedPartServiceImpl.class);
+            OutsourcedPart op = repo.findById((int) part.getId());
+            if (op != null) {
+                part.setProducts(op.getProducts());
+            }
             repo.save(part);
-        return "confirmationaddpart";}
+            return "confirmationaddpart";
+        }
     }
 
-
-
+    public boolean isInvValid(int inv, int minInv, int maxInv) {
+        return inv >= minInv && inv <= maxInv;
+    }
 }
