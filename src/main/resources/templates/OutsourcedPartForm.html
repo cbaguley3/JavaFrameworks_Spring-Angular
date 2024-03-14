@@ -24,7 +24,18 @@
 
     <p><input type="text" th:field="*{companyName}" placeholder="Company Name" class="form-control mb-4 col-4"/></p>
 
-<p><input type="submit" value="Submit" /></p>
+    <p>
+        <input type="number" th:field="*{minInv}" placeholder="Minimum Inventory" class="form-control mb-4 col-4" min="1"/>
+        <span class="text-danger" th:if="${#fields.hasErrors('minInv')}" th:errors="*{minInv}"></span>
+    </p>
+    <p>
+        <input type="number" th:field="*{maxInv}" placeholder="Maximum Inventory" class="form-control mb-4 col-4" max="100"/>
+        <span class="text-danger" th:if="${#fields.hasErrors('maxInv')}" th:errors="*{maxInv}"></span>
+    </p>
+
+
+
+    <p><input type="submit" value="Submit" /></p>
 </form>
 <a href="http://localhost:8080/">Link
     to Main Screen</a>

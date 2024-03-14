@@ -47,10 +47,11 @@ public class AboutUsController {
 
 
 E.  Add a sample inventory appropriate for your chosen store to the application. You should have five parts and five products in your sample inventory and should not overwrite existing data in the database.
-1. prompt: added if statement to check inventory level == 0, file name: BootStrapData.java, line number: 46-48, change:
+1. prompt: added if statement to check inventory level == 0 for both products and parts, file name: BootStrapData.java, line number: 45-48, change:
    
    if (partsCount == 0 && productsCount == 0) {
       addSampleInventory();
+      addProducts();
    } 
 
 2. prompt: added my five parts, file name: BootStrapData.java, line number: 69-112, change:
@@ -155,6 +156,21 @@ E.  Add a sample inventory appropriate for your chosen store to the application.
    System.out.println(part.getName()+" "+part.getCompanyName());
    }
 
+5. prompt: created addProducts method, file name: BootStrapData.java, line number: 218-229, change: 
+
+                private void addProducts() {
+                Product classicElegancePackage = new Product("Classic Elegance Package", 7000.0, 30);
+                Product modernChicPackage = new Product("Modern Chic Package", 7500.0, 30);
+                Product rusticRetreatPackage = new Product("Rustic Retreat Package", 8100.0, 30);
+                Product luxuriousOasisPackage = new Product("Luxurious Oasis Package", 8300.0, 25);
+                Product sleekUrbanPackage = new Product("Sleek Urban Package", 7600.0, 30);
+                productRepository.save(classicElegancePackage);
+                productRepository.save(modernChicPackage);
+                productRepository.save(rusticRetreatPackage);
+                productRepository.save(luxuriousOasisPackage);
+                productRepository.save(sleekUrbanPackage);
+            }
+
 
 F.  
 1. prompt: added buy now button, file name: mainScreen.html, line number: 87-90, change: 
@@ -189,50 +205,50 @@ F.
        </body>
        </html>
 
-3. prompt: created BuyProductController w/ inventory decrement logic, file name: BuyProductController.java, line number: 1-42, change:
+   3. prompt: created BuyProductController w/ inventory decrement logic, file name: BuyProductController.java, line number: 1-42, change:
 
-    package com.example.demo.controllers;
-
-    import com.example.demo.domain.Product;
-    import com.example.demo.repositories.ProductRepository;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.stereotype.Controller;
-    import org.springframework.web.bind.annotation.*;
+           package com.example.demo.controllers;
     
-    import java.util.Optional;
+           import com.example.demo.domain.Product;
+           import com.example.demo.repositories.ProductRepository;
+           import org.springframework.beans.factory.annotation.Autowired;
+           import org.springframework.stereotype.Controller;
+           import org.springframework.web.bind.annotation.*;
+        
+           import java.util.Optional;
+        
+           @Controller
+           @RequestMapping(path = "/buyConfirmation")
+           public class BuyProductController {
     
-    @Controller
-    @RequestMapping(path = "/buyConfirmation")
-    public class BuyProductController {
+           private final ProductRepository productRepository;
+    
+           @Autowired
+           public BuyProductController(ProductRepository productRepository) {
+               this.productRepository = productRepository;
+           }
 
-    private final ProductRepository productRepository;
+       @PostMapping
+       public String buyProduct(@RequestParam("productId") Long productId) {
+           Optional<Product> optionalProduct = productRepository.findById(productId);
 
-    @Autowired
-    public BuyProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+           if (optionalProduct.isPresent()) {
+               Product product = optionalProduct.get();
 
-    @PostMapping
-    public String buyProduct(@RequestParam("productId") Long productId) {
-        Optional<Product> optionalProduct = productRepository.findById(productId);
-
-        if (optionalProduct.isPresent()) {
-            Product product = optionalProduct.get();
-
-            if (product.getInv() > 0) {
-                product.setInv(product.getInv() - 1);
-                productRepository.save(product);
-                return "buyConfirmation";
-            } else {
-                // Product out of stock
-                return "outOfStock";
-            }
-        } else {
-            // Product not found
-            return "redirect:/error?message=Product not found";
-        }
-    }
-}
+               if (product.getInv() > 0) {
+                   product.setInv(product.getInv() - 1);
+                   productRepository.save(product);
+                   return "buyConfirmation";
+               } else {
+                   // Product out of stock
+                   return "outOfStock";
+               }
+           } else {
+               // Product not found
+               return "redirect:/error?message=Product not found";
+           }
+       }
+   }
 
 4. prompt: created out of stock page/notification, file name: outOfStock.html, line number: 1-22, change:
 
@@ -295,14 +311,122 @@ F.
 
 
 
+G.
+1. prompt: Added additional fields to part entity for max and min inventory, file name: part.java, line number: 116-135, change:
 
+        @Min(value = 0, message = "No inventory")
+        int minInv;
+    
+        public int getMinInv() {
+            return minInv;
+        }
+    
+        public void setMinInv(int minInv) {
+            this.minInv = minInv;
+        }
+    
+        @Max(value = 100, message = "Inventory cannot be more than 100")
+        @ValidNoMoreThan100()
+        int maxInv;
+    
+        public int getMaxInv() {
+            return maxInv;
+        }
+    
+        public void setMaxInv(int maxInv) {
+            this.maxInv = maxInv;
+        }
 
-G.  Modify the parts to track maximum and minimum inventory by doing the following:
-•  Add additional fields to the part entity for maximum and minimum inventory.
-•  Modify the sample inventory to include the maximum and minimum fields.
-•  Add to the InhousePartForm and OutsourcedPartForm forms additional text inputs for the inventory so the user can set the maximum and minimum values.
-•  Rename the file the persistent storage is saved to.
-•  Modify the code to enforce that the inventory is between or at the minimum and maximum value.
+2. prompt: added min and max values to sample inventory parts, file name: BootStrapData.java, line number: 161-210, change:
+
+            private void addSampleInventory () {
+            OutsourcedPart sink = new OutsourcedPart();
+            sink.setCompanyName("Kitchen Connections");
+            sink.setName("Sink");
+            sink.setInv(30);
+            sink.setPrice(1500.0);
+            sink.setId(101L);
+            sink.setMinInv(0);
+            sink.setMaxInv(100);
+            outsourcedPartRepository.save(sink);
+
+            OutsourcedPart shakerCabinets = new OutsourcedPart();
+            shakerCabinets.setCompanyName("Kitchen Connections");
+            shakerCabinets.setName("Shaker Cabinets");
+            shakerCabinets.setInv(35);
+            shakerCabinets.setPrice(1000.0);
+            shakerCabinets.setId(102L);
+            shakerCabinets.setMinInv(0);
+            shakerCabinets.setMaxInv(100);
+            outsourcedPartRepository.save(shakerCabinets);
+
+            OutsourcedPart luxuryCountertops = new OutsourcedPart();
+            luxuryCountertops.setCompanyName("Kitchen Connections");
+            luxuryCountertops.setName("Luxury Countertops");
+            luxuryCountertops.setInv(45);
+            luxuryCountertops.setPrice(2500.0);
+            luxuryCountertops.setId(103L);
+            luxuryCountertops.setMinInv(0);
+            luxuryCountertops.setMaxInv(100);
+            outsourcedPartRepository.save(luxuryCountertops);
+
+            OutsourcedPart refrigerator = new OutsourcedPart();
+            refrigerator.setCompanyName("Kitchen Connections");
+            refrigerator.setName("Refrigerator");
+            refrigerator.setInv(30);
+            refrigerator.setPrice(1500.0);
+            refrigerator.setId(104L);
+            refrigerator.setMinInv(0);
+            refrigerator.setMaxInv(100);
+            outsourcedPartRepository.save(refrigerator);
+
+            OutsourcedPart rangeOven = new OutsourcedPart();
+            rangeOven.setCompanyName("Kitchen Connections");
+            rangeOven.setName("Range/Oven");
+            rangeOven.setInv(40);
+            rangeOven.setPrice(2000.0);
+            rangeOven.setId(105L);
+            rangeOven.setMinInv(0);
+            rangeOven.setMaxInv(100);
+            outsourcedPartRepository.save(rangeOven);
+
+3. prompt: added additional text inputs for max and min inventory, file name: InhousePartForm.html & OutsourcedPartForm.html, line number: 26-34, change: *both files
+
+          <p>
+            <input type="number" th:field="*{minInv}" placeholder="Minimum Inventory" class="form-control mb-4 col-4" min="1"/>
+        </p>
+        <p>
+            <input type="number" th:field="*{maxInv}" placeholder="Maximum Inventory" class="form-control mb-4 col-4" max="100"/>
+        </p>
+
+4. prompt: added columns for min and max inventory to mainscreen, file name: mainscreen.html, line number: 42-43 & 52-53, change: 
+   
+         <th>Min Inventory</th>
+         <th>Max Inventory</th>
+
+    and 
+
+         <td th:text="${tempPart.minInv}">1</td>
+         <td th:text="${tempPart.maxInv}">1</td>
+   
+5. prompt: renamed the DB file, file name: spring-boot-h2-db.mv.db & application.properties, line number: 6, change: 
+
+    new file name: my-spring-boot-db.mv
+
+    change in application.properties: spring.datasource.url=jdbc:h2:file:~/my-spring-boot-db
+
+6.
+prompt: created Thymeleaf alerts to enforce inventory between min and max inventory, file name: InhousePartForm.html & OutsourcedPartForm.html, line number: 28-34 change:
+    
+         <p>
+            <input type="number" th:field="*{minInv}" placeholder="Minimum Inventory" class="form-control mb-4 col-4" min="1"/>
+            <span class="text-danger" th:if="${#fields.hasErrors('minInv')}" th:errors="*{minInv}"></span>
+        </p>
+        <p>
+            <input type="number" th:field="*{maxInv}" placeholder="Maximum Inventory" class="form-control mb-4 col-4" max="100"/>
+            <span class="text-danger" th:if="${#fields.hasErrors('maxInv')}" th:errors="*{maxInv}"></span>
+        </p>
+    
 
 
 H.  Add validation for between or at the maximum and minimum fields. The validation must include the following:

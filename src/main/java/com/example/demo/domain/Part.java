@@ -1,8 +1,10 @@
 package com.example.demo.domain;
 
 import com.example.demo.validators.ValidDeletePart;
+import com.example.demo.validators.ValidNoMoreThan100;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -24,6 +26,7 @@ public abstract class Part implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
     String name;
+
     @Min(value = 0, message = "Price value must be positive")
     double price;
     @Min(value = 0, message = "Inventory value must be positive")
@@ -107,4 +110,39 @@ public abstract class Part implements Serializable {
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
     }
+
+
+    // my minInv and maxInv variables, getters/setters, etc.
+    @Min(value = 0, message = "No inventory")
+    int minInv;
+
+    public int getMinInv() {
+        return minInv;
+    }
+
+    public void setMinInv(int minInv) {
+        this.minInv = minInv;
+    }
+
+    @Max(value = 100, message = "Inventory cannot be more than 100")
+    @ValidNoMoreThan100()
+    int maxInv;
+
+    public int getMaxInv() {
+        return maxInv;
+    }
+
+    public void setMaxInv(int maxInv) {
+        this.maxInv = maxInv;
+    }
+
+    public Part(int minInv, int maxInv) {
+        this.minInv = minInv;
+        this.maxInv = maxInv;
+    }
+    // my method to check if inventory level is in acceptable range
+    public boolean validInv() {
+        return inv >= minInv && inv <= maxInv;
+    }
+
 }
