@@ -522,8 +522,21 @@ NoMoreThan100Validator.java:
                     return false;
             }
 
+I.
+1. prompt: added unit tests for max and min, file name: PartTest.java, line number: 162-174, change:
 
-I.  Add at least two unit tests for the maximum and minimum fields to the PartTest class in the test package.
-
+         @Test
+         void minimumInv() {
+         int minInv = 0;
+         partIn.setInv(minInv);
+         assertEquals(minInv, partIn.getInv());
+         }
+      
+         @Test
+         void maximumInv() {
+         int maxInv = 100;
+         partOut.setInv(maxInv);
+         assertEquals(maxInv, partOut.getInv());
+         }
 
 J.  Remove the class files for any unused validators in order to clean your code.
