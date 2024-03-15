@@ -539,4 +539,6 @@ I.
          assertEquals(maxInv, partOut.getInv());
          }
 
-J.  Remove the class files for any unused validators in order to clean your code.
+
+J.
+1. prompt: removed the only unused validator per task instructions, file name: DeletePartValidator.java, line number: entire page
