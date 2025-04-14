@@ -2,6 +2,8 @@
 
 This project involves customizing a pre-built Spring web application with a Java backend and a basic HTML user interface to meet specific customer requirements for a sample shop. The main tasks include defining a product and parts inventory, implementing a "Buy Now" functionality, adding inventory constraints with validation, and writing unit tests.
 
+Deployed here: https://d287-java-frameworks-1.onrender.com/mainscreen
+
 ## Technologies Used
 
 ### Backend
